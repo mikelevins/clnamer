@@ -1,5 +1,8 @@
 ;;;; clnamer.lisp
 
+(defpackage #:clnamer
+  (:use #:cl))
+
 (in-package #:clnamer)
 
 (defmethod long-enough? ((s string))
@@ -11,16 +14,15 @@
 
 (defmethod read-names ((filename string))
   (with-open-file (in filename)
-    (loop for line = (read-line in nil nil nil) then (read-line in nil nil nil)
+    (loop for line = (read-line in nil nil nil)
+       then (read-line in nil nil nil)
        while line
        collect line)))
 
-;;; (time (defparameter $samples (read-names "/Users/mikel/Workshop/src/clnamer/us.names")))
-
 (defmethod mergeable? ((left string)(right string))
-  (let ((left-len (length left)))
+  (let ((left-length (length left)))
     (string= left right
-             :start1 (- left-len 2) :end1 left-len
+             :start1 (- left-length 2) :end1 left-length
              :start2 0 :end2 2)))
 
 (defmethod merge-parts ((left string)(right string))
