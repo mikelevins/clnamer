@@ -1,10 +1,5 @@
 ;;;; clnamer.lisp
 
-(defpackage #:clnamer
-  (:use #:cl))
-
-(in-package #:clnamer)
-
 (defmethod long-enough? ((s string))
   (> (length s) 2))
 
@@ -21,9 +16,10 @@
 
 (defmethod mergeable? ((left string)(right string))
   (let ((left-length (length left)))
-    (string= left right
-             :start1 (- left-length 2) :end1 left-length
-             :start2 0 :end2 2)))
+    (and (char= (elt right 0)
+                (elt left (- left-length 2)))
+         (char= (elt right 1)
+                (elt left (- left-length 1))))))
 
 (defmethod merge-parts ((left string)(right string))
   (concatenate 'string left (subseq right 2)))
@@ -33,8 +29,8 @@
        (random (length sequence))))
 
 (defmethod find-extension ((start string)(parts list))
-  (any (remove-if (lambda (part)(mergeable? start part))
-                  parts)))
+  (any (remove-if-not (lambda (part)(mergeable? start part))
+                      parts)))
 
 (defmethod extend-name ((start string)(parts list)(ends list))
   (let ((next (find-extension start parts)))
@@ -55,4 +51,4 @@
        collect (extend-name (any starts) parts ends))))
 
 ;;; (defparameter $rulefile "/Users/mikel/Workshop/src/clnamer/us.names")
-;;; (time (generate-names 20 $rulefile))
+;;; (generate-names 20 $rulefile)
